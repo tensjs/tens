@@ -1,0 +1,22 @@
+{
+  "name": "tens",
+  "version": "0.0.1",
+  "description": "Tens",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tensjs/tens.git"
+  },
+  "keywords": [
+    "tensorflow"
+  ],
+  "author": "demohi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tensjs/tens/issues"
+  },
+  "homepage": "https://github.com/tensjs/tens#readme"
+}
