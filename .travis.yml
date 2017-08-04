@@ -1,0 +1,10 @@
+dist: trusty
+sudo: false
+language: node_js
+node_js:
+  - "6.11.2"
+install:
+  - npm install
+script:
+  - echo $LD_LIBRARY_PATH
+  - npm test
