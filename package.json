@@ -8,7 +8,7 @@
     "test-cov": "npm run test -- --coverage",
     "preinstall": "echo \"download tensorflow\"",
     "postinstall": "node scripts/install.js && node-gyp rebuild",
-    "lint": "eslint index.js lib test",
+    "lint": "eslint index.js lib test scripts",
     "rebuild": "node-gyp rebuild"
   },
   "repository": {
@@ -24,7 +24,7 @@
     "url": "https://github.com/tensjs/tens/issues"
   },
   "homepage": "https://github.com/tensjs/tens#readme",
-  "tensorflow": "1.2.1",
+  "tfVersion": "1.2.1",
   "dependencies": {
     "bindings": "^1.3.0",
     "compressing": "^1.2.3",
