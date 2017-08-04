@@ -1,12 +1,12 @@
 {
   "name": "tens",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Tens",
   "main": "index.js",
   "scripts": {
     "test": "jest --forceExit",
     "test-cov": "npm run test -- --coverage",
-    "install": "scripts/install.js",
+    "postinstall": "node scripts/install.js",
     "lint": "eslint index.js lib test",
     "rebuild": "node-gyp rebuild"
   },

@@ -3,7 +3,7 @@
     "target_name": "tensorflow",
     "include_dirs": [
       "<!@(node -p \"require('node-addon-api').include\")",
-      "./tensorflow/include",
+      "tensorflow/include",
     ],
     "dependencies": [ "<!(node -p \"require('node-addon-api').gyp\")" ],
     "sources": [
