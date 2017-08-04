@@ -8,3 +8,6 @@ install:
 script:
   - npm run lint
   - npm run test-cov
+after_script:
+  - npm install codecov
+  - ./node_modules/.bin/codecov
