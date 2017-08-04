@@ -1,3 +1,4 @@
+[![build status][travis-image]][travis-url]
 # Tens
 Tens, written in Javascript and capable of running on top of TensorFlow.
 
@@ -14,3 +15,6 @@ npm run rebuild
 ```shell
 npm test
 ```
+
+[travis-image]: https://travis-ci.org/tensjs/tens.svg?branch=master
+[travis-url]: https://travis-ci.org/tensjs/tens
