@@ -7,7 +7,7 @@
     ],
     "dependencies": [ "<!(node -p \"require('node-addon-api').gyp\")" ],
     "sources": [
-      "cc/binding.cc"
+      "source/binding.cc"
     ],
     "cflags!": [ "-fno-exceptions" ],
     "cflags_cc!": [ "-fno-exceptions" ],
