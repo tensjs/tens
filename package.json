@@ -1,12 +1,13 @@
 {
   "name": "tens",
-  "version": "0.0.3",
+  "version": "0.0.9",
   "description": "Tens",
   "main": "index.js",
   "scripts": {
     "test": "jest --forceExit",
     "test-cov": "npm run test -- --coverage",
-    "postinstall": "node scripts/install.js",
+    "preinstall": "echo \"download tensorflow\"",
+    "postinstall": "node scripts/install.js && node-gyp rebuild",
     "lint": "eslint index.js lib test",
     "rebuild": "node-gyp rebuild"
   },
