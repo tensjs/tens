@@ -12,11 +12,11 @@ const path = require('path');
 const type = 'cpu';// TODO: support other type
 
 const prefix = 'https://storage.googleapis.com/tensorflow/libtensorflow';
-const libtensorflow = `${prefix}/libtensorflow-${type}-${os.platform()}-x86_64-${pkg.tensorflow}.tar.gz`;
-const libtensorflow_proto = `${prefix}/libtensorflow_proto-${pkg.tensorflow}.zip`;
+const libtensorflow = `${prefix}/libtensorflow-${type}-${os.platform()}-x86_64-${pkg.tfVersion}.tar.gz`;
+const libtensorflowProto = `${prefix}/libtensorflow_proto-${pkg.tfVersion}.zip`;
 
 // download libtensorflow_proto
-urllib.request(libtensorflow_proto, {
+urllib.request(libtensorflowProto, {
   streaming: true,
   followRedirect: true,
 })
