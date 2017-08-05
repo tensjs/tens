@@ -1,7 +1,7 @@
 ![](https://github.com/tensjs/tens/blob/a33411aff87b3b72b7a7db54a187c71f24709c32/tens.png)
 [![build status][travis-image]][travis-url]
 [![codecov][coveralls-image]][coveralls-url]
-[![greenkeeper](greenkeeper-image)][(greenkeeper-url)]
+[![greenkeeper][greenkeeper-image]][greenkeeper-url]
 
 # Tens
 
