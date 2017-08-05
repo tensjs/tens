@@ -1,4 +1,4 @@
-![](https://github.com/tensjs/tens/blob/d8b733b556095d78bebbe40ee11bbdc12f528697/tens.png)
+![](https://github.com/tensjs/tens/blob/a33411aff87b3b72b7a7db54a187c71f24709c32/tens.png)
 [![build status][travis-image]][travis-url]
 [![codecov][coveralls-image]][coveralls-url]
 # Tens
