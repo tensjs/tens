@@ -2,6 +2,8 @@
 [![build status][travis-image]][travis-url]
 [![codecov][coveralls-image]][coveralls-url]
 # Tens
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/tensjs/tens.svg)](https://greenkeeper.io/)
 Tens, written in Javascript and capable of running on top of TensorFlow.
 
 # run
