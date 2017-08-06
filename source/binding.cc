@@ -1,6 +1,12 @@
-#include <node_api.h>
 #include <string.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <node_api.h>
 #include <tensorflow/c/c_api.h>
+
+#include "core/dtype.h"
+#include "core/graph.h"
+#include "core/operation.h"
 
 napi_value Version(napi_env env, napi_callback_info info)
 {
@@ -16,12 +22,59 @@ napi_value Version(napi_env env, napi_callback_info info)
   return result;
 }
 
+napi_value GetAllOpList(napi_env env, napi_callback_info info)
+{
+  napi_status status;
+  napi_value result;
+
+  TF_Buffer* buff = TF_GetAllOpList();
+
+  void *output = (void *)malloc(buff->length);
+  status = napi_create_buffer_copy(env, buff->length, buff->data, &output, &result);
+  if (status != napi_ok)
+  {
+    napi_throw_error(env, nullptr, "get op list error");
+  }
+
+  // free(output);
+
+  return result;
+}
+
 void Init(napi_env env, napi_value exports, napi_value module, void* priv)
 {
-    napi_status status;
-    napi_property_descriptor desc =
-        { "version", 0, Version, 0, 0, 0, napi_default, 0 };
-    status = napi_define_properties(env, exports, 1, &desc);
+  napi_status status;
+
+  napi_value fn;
+
+  // {function} exports.version
+  status =  napi_create_function(env, NULL, Version, NULL, &fn);
+  assert(status == napi_ok);
+
+  status = napi_set_named_property(env, exports, "version", fn);
+  assert(status == napi_ok);
+
+  // {function} exports._getAllOpList
+  status =  napi_create_function(env, NULL, GetAllOpList, NULL, &fn);
+  assert(status == napi_ok);
+
+  status = napi_set_named_property(env, exports, "_getAllOpList", fn);
+  assert(status == napi_ok);
+
+  // {object} exports.dtype
+  napi_value dtype_obj = Dtype::Init(env);
+  status = napi_set_named_property(env, exports, "dtype", dtype_obj);
+  assert(status == napi_ok);
+
+  // {class} exports.Graph
+  napi_value graph_cons = Graph::Init(env);
+  status = napi_set_named_property(env, exports, "Graph", graph_cons);
+  assert(status == napi_ok);
+
+  // {class} exports.Operation
+  napi_value oper_cons = Operation::Init(env);
+  status = napi_set_named_property(env, exports, "Operation", oper_cons);
+  assert(status == napi_ok);
 }
 
 NAPI_MODULE(addon, Init)
