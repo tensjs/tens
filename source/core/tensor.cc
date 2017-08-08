@@ -3,39 +3,20 @@
 
 napi_ref Tensor::constructor;
 
-Tensor::Tensor(Graph* graph, const char* op_type, const char* oper_name)
-{
-  TF_Graph* tf_graph = graph->GetTFGraph();
-
-  this->graph = graph;
-  this->tf_status = TF_NewStatus();
-  this->tf_desc = TF_NewOperation(tf_graph, op_type, oper_name);
-
-  //TF_Output output = { TF_Operation* oper, 0 };
-
-  //TF_AddInput(this->tf_desc)
+Tensor::Tensor(TF_DataType type, const int64_t* dims, int num_dims, void* data, size_t len) {
+  // void (*deallocator)(void* data, size_t len, void* arg)
+  this->tf_tensor = TF_NewTensor(type, dims,
+    num_dims, data, len, &Deallocate, nullptr /* void* deallocator_arg */);
 }
 
-Operation::~Operation() {
-  this->graph = nullptr;
-  this->tf_desc = nullptr;
-  this->tf_oper = nullptr;
-  this->tf_status = nullptr;
-  TF_DeleteStatus(this->tf_status);
-}
+Tensor::~Tensor() { }
 
-napi_value Operation::Init(napi_env env) {
+napi_value Tensor::Init(napi_env env) {
   napi_status status;
-  napi_property_descriptor properties[] = {
-    { "graph", 0, 0, Operation::GetGraph, 0, 0, napi_enumerable, 0 },
-    { "finish", 0, Operation::Finish, 0, 0, 0, napi_enumerable, 0 }
-  };
-
-  size_t property_count = sizeof(properties) / sizeof(properties[0]);
 
   napi_value cons;
-  status = napi_define_class(env, "Operation",
-    Operation::New, nullptr, property_count, properties, &cons);
+  status = napi_define_class(env, "Tensor",
+    Tensor::New, nullptr, 0, nullptr, &cons);
   assert(status == napi_ok);
 
   status = napi_create_reference(env, cons, 1, &constructor);
@@ -44,19 +25,19 @@ napi_value Operation::Init(napi_env env) {
   return cons;
 }
 
-napi_value Operation::New(napi_env env, napi_callback_info info)
+napi_value Tensor::New(napi_env env, napi_callback_info info)
 {
   napi_status status;
 
-  // Invoked as constructor: `new Operation(...)`
-  size_t argc = 3;
-  napi_value args[3];
+  // Invoked as constructor: `new Tensor(...)`
+  size_t argc = 5;
+  napi_value args[5];
   napi_value jsthis;
   status = napi_get_cb_info(env, info, &argc, args, &jsthis, nullptr);
   assert(status == napi_ok);
 
-  if (argc < 3) {
-    Exception::ThrowError(env, "three arguments are needed!\n");
+  if (argc < 5) {
+    Exception::ThrowError(env, "5 arguments are needed!\n");
   }
 
   bool is_constructor;
@@ -65,67 +46,59 @@ napi_value Operation::New(napi_env env, napi_callback_info info)
 
   if (!is_constructor) {
     // Invoked as plain function `Operation(...)`, turn into construct call.
-    return Operation::NewInstance(env, info);
+    return Tensor::NewInstance(env, info);
   }
-
-  Graph* graph;
-  size_t str_len = 0;
-  char oper_name[NAMING_STRING_SIZE];
-  char op_type[NAMING_STRING_SIZE];
 
   napi_valuetype valuetype;
-  status = napi_typeof(env, args[0], &valuetype);
+  for (size_t i = 0; i < argc; i ++) {
+    status = napi_typeof(env, args[0], &valuetype);
+    assert(status == napi_ok && valuetype != napi_undefined);
+  }
+
+  TF_DataType type;
+  status = napi_get_value_int32(env, args[0], (int *)&type);
   assert(status == napi_ok);
 
-  if (valuetype != napi_undefined) {
-    status = napi_unwrap(env, args[0], reinterpret_cast<void**>(&graph));
-    assert(status == napi_ok);
-  }
-
-  status = napi_typeof(env, args[1], &valuetype);
+  int64_t dims;
+  status = napi_get_value_int64(env, args[1], &dims);
   assert(status == napi_ok);
 
-  if (valuetype != napi_undefined) {
-    status = napi_get_value_string_utf8(env, args[1], op_type, NAMING_STRING_SIZE, &str_len);
-    assert(status == napi_ok);
-  }
-
-  if (str_len >= NAMING_STRING_SIZE) {
-    napi_throw_error(env, nullptr, "op_type string is too long!");
-  }
-
-  status = napi_typeof(env, args[2], &valuetype);
+  int num_dims;
+  // #ifdef __x86_64__
+  // status = napi_get_value_int64(env, args[2], &num_dims);
+  // #else // __i386__
+  status = napi_get_value_int32(env, args[2], &num_dims);
+  // #endif
   assert(status == napi_ok);
 
-  if (valuetype != napi_undefined) {
-    status = napi_get_value_string_utf8(env, args[2], oper_name, NAMING_STRING_SIZE, &str_len);
-    assert(status == napi_ok);
-  }
+  size_t len = 0;
+  status = napi_get_value_uint32(env, args[4], (uint32_t *)&len);
+  assert(status == napi_ok);
 
-  if (str_len >= NAMING_STRING_SIZE) {
-    napi_throw_error(env, nullptr, "oper_name string is too long!");
-  }
+  void* data = (void *)malloc(sizeof(char) * len);
+  status = napi_get_buffer_info(env, args[3], &data, &len);
+  assert(status == napi_ok);
 
-  Operation* obj = new Operation(graph, op_type, oper_name);
+  Tensor* tensor = new Tensor(type, &dims, num_dims, data, len);
 
   status = napi_wrap(env, jsthis,
-    reinterpret_cast<void*>(obj), Operation::Destructor, nullptr, nullptr);
+    reinterpret_cast<void*>(tensor), Tensor::Destructor, nullptr, nullptr);
   assert(status == napi_ok);
 
   return jsthis;
 }
 
-napi_value Operation::NewInstance(napi_env env, napi_callback_info info)
+napi_value Tensor::NewInstance(napi_env env, napi_callback_info info)
 {
   napi_status status;
 
-  size_t _argc = 3;
-  napi_value args[3];
+  size_t _argc = 5;
+  napi_value args[5];
   status = napi_get_cb_info(env, info, &_argc, args, nullptr, nullptr);
   assert(status == napi_ok);
 
-  const size_t argc = 3;
-  napi_value argv[argc] = {args[0], args[1], args[2]};
+  const size_t argc = 5;
+  napi_value argv[argc] = {args[0], args[1], args[2], args[3], args[4]};
 
   napi_value cons;
   status = napi_get_reference_value(env, constructor, &cons);
@@ -138,46 +111,11 @@ napi_value Operation::NewInstance(napi_env env, napi_callback_info info)
   return instance;
 }
 
-void Operation::Destructor(napi_env env, void* instance_ptr, void* /*finalize_hint*/) {
-  reinterpret_cast<Operation*>(instance_ptr)->~Operation();
+void Tensor::Destructor(napi_env env, void* instance_ptr, void* /*finalize_hint*/) {
+  reinterpret_cast<Tensor*>(instance_ptr)->~Tensor();
 }
 
-napi_value Operation::GetGraph(napi_env env, napi_callback_info info) {
-  napi_status status;
-
-  napi_value jsthis;
-  status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
-  assert(status == napi_ok);
-
-  Operation* oper;
-  status = napi_unwrap(env, jsthis, reinterpret_cast<void**>(&oper));
-  assert(status == napi_ok);
-
-  napi_value graph;
-  status = napi_get_reference_value(env, oper->graph->GetNapiRef(), &graph);
-  assert(status == napi_ok);
-
-  return graph;
-}
-
-napi_value Operation::Finish(napi_env env, napi_callback_info info)
+void Tensor::Deallocate(void* data, size_t len, void* arg)
 {
-  napi_status status;
-
-  napi_value jsthis;
-  status = napi_get_cb_info(env, info, nullptr, nullptr, &jsthis, nullptr);
-  assert(status == napi_ok);
-
-  Operation* oper;
-  status = napi_unwrap(env, jsthis, reinterpret_cast<void**>(&oper));
-  assert(status == napi_ok);
-
-  TF_Operation* tf_oper = TF_FinishOperation(oper->tf_desc, oper->tf_status);
-  if (TF_GetCode(oper->tf_status) == TF_OK || oper == nullptr) {
-    Exception::ThrowError(env, "finish operation failed!\n");
-  }
-
-  oper->tf_oper = tf_oper;
-
-  return jsthis;
+  // TODO dealloate the tensor data
 }

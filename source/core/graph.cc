@@ -77,8 +77,6 @@ napi_value Graph::NewInstance(napi_env env, napi_callback_info info)
 
 void Graph::Destructor(napi_env env, void* instance_ptr, void* /*finalize_hint*/) {
   Graph* graph = reinterpret_cast<Graph*>(instance_ptr);
-
   napi_delete_reference(env, graph->ref);
-
-  delete graph;
+  graph->~Graph();
 }

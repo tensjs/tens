@@ -7,24 +7,20 @@
 
 #define NAMING_STRING_SIZE 32
 
-class Operation {
+class Tensor {
 public:
   static napi_value Init(napi_env env);
 
 private:
-  explicit Tensor(Graph* graph, const char* op_type, const char* oper_name); // constructor
-  ~Operation(); // destructor
+  explicit Tensor(TF_DataType type, const int64_t* dims, int num_dims, void* data, size_t len); // constructor
+  ~Tensor(); // destructor
 
   static napi_value New(napi_env env, napi_callback_info info);
   static napi_value NewInstance(napi_env env, napi_callback_info info);
-  static napi_value GetGraph(napi_env env, napi_callback_info info);
-  static napi_value Finish(napi_env env, napi_callback_info info);
   static void Destructor(napi_env env, void* instance_ptr, void* /*finalize_hint*/);
+  static void Deallocate(void* data, size_t len, void* arg);
 
-  Tensor* graph;
-  TF_Status* tf_status;
-  TF_Operation* tf_oper;
-  TF_OperationDescription* tf_desc;
+  TF_Tensor* tf_tensor;
 
   static napi_ref constructor;
 };
