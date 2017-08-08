@@ -7,7 +7,12 @@
     ],
     "dependencies": [ "<!(node -p \"require('node-addon-api').gyp\")" ],
     "sources": [
-      "source/binding.cc"
+      "source/binding.cc",
+      "source/core/dtype.cc",
+      "source/core/tensor.cc",
+      "source/core/graph.cc",
+      "source/core/operation.cc",
+      "source/util/exception.cc"
     ],
     "cflags!": [ "-fno-exceptions" ],
     "cflags_cc!": [ "-fno-exceptions" ],
