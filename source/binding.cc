@@ -36,7 +36,7 @@ napi_value GetAllOpList(napi_env env, napi_callback_info info)
     napi_throw_error(env, nullptr, "get op list error");
   }
 
-  // free(output);
+  // TODO free(output);
 
   return result;
 }
@@ -62,9 +62,9 @@ void Init(napi_env env, napi_value exports, napi_value module, void* priv)
   assert(status == napi_ok);
 
   // {object} exports.dtype
-  napi_value dtype_obj = Dtype::Init(env);
-  status = napi_set_named_property(env, exports, "dtype", dtype_obj);
-  assert(status == napi_ok);
+  // napi_value dtype_cons = Dtype::Init(env);
+  // status = napi_set_named_property(env, exports, "Dtype", dtype_cons);
+  // assert(status == napi_ok);
 
   // {class} exports.Graph
   napi_value graph_cons = Graph::Init(env);

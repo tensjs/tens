@@ -12,3 +12,15 @@ const OpListMessage = root.lookupType('OpList');
 const oplist = OpListMessage.decode(tf._getAllOpList()).op;
 
 console.log(oplist);
+
+const opFiltered = oplist
+  .filter(opDef => opDef.name === 'Const')
+  .map((opDef) => {
+    console.log(opDef);
+    return opDef;
+    // console.log(opDef.inputArg)
+    // console.log(opDef.outputArg)
+    // console.log(opDef.attr)
+  });
+
+console.log(opFiltered.length);
