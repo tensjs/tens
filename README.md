@@ -7,7 +7,7 @@
 
 Tens, written in Javascript and capable of running on top of TensorFlow.
 
-# run
+# dev
 
 ```shell
 npm i
