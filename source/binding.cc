@@ -58,7 +58,7 @@ void Init(napi_env env, napi_value exports, napi_value module, void* priv)
   status =  napi_create_function(env, NULL, GetAllOpList, NULL, &fn);
   assert(status == napi_ok);
 
-  status = napi_set_named_property(env, exports, "_getAllOpList", fn);
+  status = napi_set_named_property(env, exports, "getAllOpList", fn);
   assert(status == napi_ok);
 
   // {object} exports.dtype

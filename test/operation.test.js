@@ -1,3 +1,5 @@
+'use strict';
+
 const tf = require('../');
 
 test('operation', () => {

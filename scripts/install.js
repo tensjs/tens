@@ -3,6 +3,8 @@
  * download tensorflow
  */
 
+'use strict';
+
 const pkg = require('../package.json');
 const os = require('os');
 const urllib = require('urllib');

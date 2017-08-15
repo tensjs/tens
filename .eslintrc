@@ -1,6 +1,6 @@
 {
-  "extends": "airbnb-base",
-  "rules": {
-    "no-console": 0
+  "extends": "eslint-config-egg",
+  "parserOptions": {
+    "ecmaVersion": 2017
   }
 }
