@@ -58,3 +58,4 @@ typings/
 .env
 tensorflow/
 .vscode/
+opList.json

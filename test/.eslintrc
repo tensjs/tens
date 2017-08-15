@@ -2,5 +2,8 @@
   "env": {
     "jest": true
   },
-  "extends": "airbnb-base"
+  "extends": "eslint-config-egg",
+  "parserOptions": {
+    "ecmaVersion": 2017
+  }
 }
